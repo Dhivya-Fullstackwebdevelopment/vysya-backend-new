@@ -1,16 +1,23 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .utils import generate_push_token
+from .services import send_push
 
 
-@api_view(["GET"])
-def generate_token(request):
+@api_view(["POST"])
+def send_notification(request):
+    token = request.data.get("token")
+    title = request.data.get("title", "Notification")
+    body = request.data.get("body", "")
 
-    token = generate_push_token()
+    if not token:
+        return Response(
+            {"success": False, "message": "token is required"}, status=400
+        )
 
-    return Response({
-        "success": True,
-        "message": "Token generated successfully",
-        "token": token
-    })
+    try:
+        provider, result = send_push(token, title, body)
+    except Exception as e:
+        return Response({"success": False, "message": str(e)}, status=502)
+
+    return Response({"success": True, "provider": provider, "result": result})

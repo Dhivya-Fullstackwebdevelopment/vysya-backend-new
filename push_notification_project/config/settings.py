@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -27,6 +30,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+# Local (DEBUG=True) -> expo, Live (DEBUG=False) -> firebase
+# Venumna environment variable la override pannalaam
+PUSH_PROVIDER = os.environ.get(
+    "PUSH_PROVIDER",
+    "expo" if DEBUG else "firebase"
+)
+
+FIREBASE_CREDENTIALS = os.environ.get(
+    "FIREBASE_CREDENTIALS", BASE_DIR / "serviceAccountKey.json"
+)
 
 # Application definition
 
@@ -121,4 +135,3 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

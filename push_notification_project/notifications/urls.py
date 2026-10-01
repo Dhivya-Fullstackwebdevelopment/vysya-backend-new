@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import generate_token
+from .views import send_notification
 
 urlpatterns = [
-    path("generate-token/", generate_token, name="generate_token"),
+    path("send-notification/", send_notification, name="send_notification"),
 ]
