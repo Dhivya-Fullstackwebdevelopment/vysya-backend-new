@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import save_push_token
+from .views import generate_token
 
 urlpatterns = [
-    path('save-token/', save_push_token, name='save_push_token'),
+    path("generate-token/", generate_token, name="generate_token"),
 ]
