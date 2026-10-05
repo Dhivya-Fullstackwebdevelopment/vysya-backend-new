@@ -9,6 +9,9 @@ FIREBASE_KEY_FILE = "serviceAccountKey.json"  # live-ku mattum venum
 EXPO_PREFIXES = ("ExponentPushToken[", "ExpoPushToken[")
 HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
 
+ANDROID_CHANNEL_ID = "default"   # app-la setNotificationChannelAsync("default") oda match aaganum
+NOTIFICATION_COLOR = "#9B1C1C"   # app.json expo-notifications color oda same
+
 
 def is_expo_token(token):
     # Wrapped Expo token, illana raw ID. FCM token 100+ chars, ":" irukkum
@@ -21,8 +24,15 @@ def send_expo(token, title, body, data=None):
 
     res = requests.post(
         EXPO_PUSH_URL,
-        json={"to": token, "title": title, "body": body,
-              "sound": "default", "data": data or {}},
+        json={
+            "to": token,
+            "title": title,
+            "body": body,
+            "sound": "default",
+            "channelId": ANDROID_CHANNEL_ID,
+            "priority": "high",
+            "data": data or {},
+        },
         headers=HEADERS,
         timeout=10,
     )
@@ -53,6 +63,14 @@ def send_firebase(token, title, body, data=None):
     message = messaging.Message(
         notification=messaging.Notification(title=title, body=body),
         data={k: str(v) for k, v in (data or {}).items()},  # FCM data string mattum
+        android=messaging.AndroidConfig(
+            priority="high",
+            notification=messaging.AndroidNotification(
+                channel_id=ANDROID_CHANNEL_ID,
+                color=NOTIFICATION_COLOR,
+                sound="default",
+            ),
+        ),
         token=token,
     )
     return {"message_id": messaging.send(message)}
