@@ -13,9 +13,16 @@ ANDROID_CHANNEL_ID = "default"   # app-la setNotificationChannelAsync("default")
 NOTIFICATION_COLOR = "#9B1C1C"   # app.json expo-notifications color oda same
 
 
+def is_firebase_token(token):
+    # Real FCM token: 100+ chars, ":" irukkum  (eg: dX3k...:APA91b...)
+    return ":" in token or len(token) > 100
+
+
 def is_expo_token(token):
-    # Wrapped Expo token, illana raw ID. FCM token 100+ chars, ":" irukkum
-    return token.startswith(EXPO_PREFIXES) or (len(token) < 50 and ":" not in token)
+    # Wrapped Expo token (ExponentPushToken[...]) illana stripped Expo ID (short, no ":")
+    if token.startswith(EXPO_PREFIXES):
+        return True
+    return not is_firebase_token(token)
 
 
 def send_expo(token, title, body, data=None):
