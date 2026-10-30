@@ -13,7 +13,8 @@ from .services import send_push
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def google_login(request):
-    access_token = request.data.get("access_token")
+    # Check for google_access_token sent by the mobile app, fallback to access_token
+    access_token = request.data.get("google_access_token") or request.data.get("access_token")
 
     # Verify Google account first
     try:
@@ -27,7 +28,6 @@ def google_login(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    # STATIC RESPONSE - TESTING ONLY
     return Response(
         {
             "status": 1,
@@ -55,7 +55,6 @@ def google_login(request):
         },
         status=status.HTTP_200_OK,
     )
-
 
 @api_view(["POST"])
 def send_notification(request):
